@@ -47,8 +47,47 @@ void viewCourses(const vector<Course>& courses) {
             << ", Credits " << course.getCredits() << endl;
     }
 }
+void saveAllStudentsToFile(const vector<Student>& students) {
+    ofstream file("students.txt", ios::trunc);
+    if (!file) throw runtime_error("Cannot open students file");
+    for (const auto& s : students) {
+        file << s.getName() << " " << s.getAge() << " " << s.getStudentId() << endl;
+    }
+}
+vector<Student> loadStudentsFromFile() {
+    vector<Student> students;
+    ifstream file("students.txt");
+    if (!file) return students;
+    string name;
+    int age, id;
+    while (file >> name >> age >> id) {
+        students.push_back(Student(name, age, id));
+    }
+    return students;
+}
+void saveAllProfessorsToFile(const vector<Professor>& professors) {
+    ofstream file("profesor.txt", ios::trunc);
+    if (!file) throw runtime_error("Cannot open professors file");
+    for (const auto& p : professors) {
+        file << p.getName() << " " << p.getAge() << " "
+            << p.getSubject() << " " << p.getExperience() << endl;
+    }
+}
+vector<Professor> loadProfessorsFromFile() {
+    vector<Professor> professors;
+    ifstream file("profesor.txt");
+    if (!file) return professors;
+    string name, subject;
+    int age, experience;
+    while (file >> name >> age >> subject >> experience) {
+        professors.push_back(Professor(name, age, subject, experience));
+    }
+    return professors;
+}
 
 int main() {
+    vector<Student> students = loadStudentsFromFile();
+    vector<Professor> professors = loadProfessorsFromFile();
     string password;
     int choice = 0;
     vector<Course> courses = loadCoursesFromFile();
@@ -72,8 +111,14 @@ int main() {
                     cout << "1 Add new course" << endl;
                     cout << "2 View all courses" << endl;
                     cout << "3 Delete course" << endl;
-                    cout << "4 Exit" << endl;
-                    cout << "Choose operation";
+                    cout << "4 Add new student" << endl;
+                    cout << "5 view all student" << endl;
+                    cout << "6 delet student" << endl;
+                    cout << "7 Add new profesor" << endl;
+                    cout << "8 view all profesor" << endl;
+                    cout << "9 Delet profesor" << endl;
+                    cout << "10 Exit" << endl;
+                    cout << "Choose operation\n";
                     cin >> choice;
 
                     if (choice == 1) {
@@ -121,8 +166,89 @@ int main() {
                         }
                     }
                     else if (choice == 4) {
-                        break;
+                        string name;
+                        int age, id;
+                        cout << "Enter student name: ";
+                        cin >> name;
+                        cout << "Enter student age: ";
+                        cin >> age;
+                        cout << "Enter student ID: ";
+                        cin >> id;
+
+                        students.push_back(Student(name, age, id));
+                        saveAllStudentsToFile(students);
+                        cout << "Student added.\n";
+                        logUserAction("Admin added student " + name);
                     }
+                    else if (choice == 5) {
+                        cout << "\n--- All Students ---\n";
+                        for (const auto& student : students) {
+                            student.printInfo();
+                            cout << "---------------------\n";
+                        }
+                        logUserAction("Admin viewed all students");
+                    }
+                    else if (choice == 6) {
+                        int id;
+                        cout << "Enter student ID to delete: ";
+                        cin >> id;
+                        auto it = remove_if(students.begin(), students.end(), [&](const Student& s) {
+                            return s.getStudentId() == id;
+                            });
+                        if (it != students.end()) {
+                            students.erase(it, students.end());
+                            saveAllStudentsToFile(students);
+                            cout << "Student deleted.\n";
+                            logUserAction("Admin deleted student ID " + to_string(id));
+                        }
+                        else {
+                            cout << "Student not found.\n";
+                        }
+                    }
+                    else if (choice == 7) {
+                        string name, subject;
+                        int age, experience;
+                        cout << "Enter professor name: ";
+                        cin >> name;
+                        cout << "Enter professor age: ";
+                        cin >> age;
+                        cout << "Enter professor subject: ";
+                        cin >> subject;
+                        cout << "Enter years of experience: ";
+                        cin >> experience;
+
+                        professors.push_back(Professor(name, age, subject, experience));
+                        saveAllProfessorsToFile(professors);
+                        cout << "Professor added.\n";
+                        logUserAction("Admin added professor " + name);
+                    }
+                    else if (choice == 8) {
+                        cout << "\n--- All Professors ---\n";
+                        for (const auto& prof : professors) {
+                            prof.printInfo();
+                            cout << "-----------------------\n";
+                        }
+                        logUserAction("Admin viewed all professors");
+                    }
+
+                    else if (choice == 9) {
+                        string name;
+                        cout << "Enter professor name to delete: ";
+                        cin >> name;
+                        auto it = remove_if(professors.begin(), professors.end(), [&](const Professor& p) {
+                            return p.getName() == name;
+                            });
+                        if (it != professors.end()) {
+                            professors.erase(it, professors.end());
+                            saveAllProfessorsToFile(professors);
+                            cout << "Professor deleted.\n";
+                            logUserAction("Admin deleted professor " + name);
+                        }
+                        else {
+                            cout << "Professor not found.\n";
+                        }
+                    }
+
                     else {
                         cout << "Invalid option Try again\n";
                     }
@@ -136,7 +262,8 @@ int main() {
             while (true) {
                 cout << "\nStudent Menu" << endl;
                 cout << "1 View available courses" << endl;
-                cout << "2 Exit" << endl;
+                cout << "2 view profesor" << endl;
+                cout << "3 Exit" << endl;
                 cout << "Choose operation ";
                 cin >> choice;
 
@@ -145,6 +272,9 @@ int main() {
                     logUserAction("Student viewed courses");
                 }
                 else if (choice == 2) {
+                    
+                }
+                else if (choice == 3) {
                     break;
                 }
                 else {
@@ -153,11 +283,11 @@ int main() {
             }
         }
         else {
-            cout << "Exiting program..." << endl;
+            cout << "Exiting program" << endl;
         }
     }
     catch (exception& e) {
-        cerr << "Error: " << e.what() << endl;
+        cerr << "Error " << e.what() << endl;
     }
 
     return 0;

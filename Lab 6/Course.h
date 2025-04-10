@@ -17,4 +17,4 @@ public:
     std::string getCode() const { return code; }
     std::string getName() const { return name; }
     int getCredits() const { return credits; }
-};
+}; 
