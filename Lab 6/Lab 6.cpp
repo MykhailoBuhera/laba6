@@ -272,7 +272,12 @@ int main() {
                     logUserAction("Student viewed courses");
                 }
                 else if (choice == 2) {
-                    
+                    cout << "\n--- All Professors ---\n";
+                    for (const auto& prof : professors) {
+                        prof.printInfo();
+                        cout << "-----------------------\n";
+                    }
+                    logUserAction("Student viewed all professors");
                 }
                 else if (choice == 3) {
                     break;
