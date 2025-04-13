@@ -91,209 +91,216 @@ int main() {
     string password;
     int choice = 0;
     vector<Course> courses = loadCoursesFromFile();
+    while (true)
+    {
+        try {
+            cout << "_________________________________" << endl;
+            cout << "Student Information System" << endl;
+            cout << "0 EXIT" << endl;
+            cout << "1 Admin menu" << endl;
+            cout << "2 Student menu" << endl;
+            cout << "Choose operation " << endl;
+            cout << "_________________________________" << endl;
+            cin >> choice;
 
-    try {
-        cout << "_________________________________" << endl;
-        cout << "Student Information System" << endl;
-        cout << "0 EXIT" << endl;
-        cout << "1 Admin menu" << endl;
-        cout << "2 Student menu" << endl;
-        cout << "Choose operation " << endl;
-        cout << "_________________________________" << endl;
-        cin >> choice;
+            if (choice == 1) {
+                cout << "Enter the password: \n";
+                cin >> password;
+                if (password == "admin1") {
+                    while (true) {
+                        cout << "\nAdmin Menu" << endl;
+                        cout << "1 Add new course" << endl;
+                        cout << "2 View all courses" << endl;
+                        cout << "3 Delete course" << endl;
+                        cout << "4 Add new student" << endl;
+                        cout << "5 view all student" << endl;
+                        cout << "6 delet student" << endl;
+                        cout << "7 Add new profesor" << endl;
+                        cout << "8 view all profesor" << endl;
+                        cout << "9 Delet profesor" << endl;
+                        cout << "10 Exit" << endl;
+                        cout << "Choose operation\n";
+                        cin >> choice;
 
-        if (choice == 1) {
-            cout << "Enter the password: \n";
-            cin >> password;
-            if (password == "admin1") {
+                        if (choice == 1) {
+                            string courseCode, courseName;
+                            int courseCredits;
+                            cout << "Enter course code ";
+                            cin >> courseCode;
+                            auto it = find_if(courses.begin(), courses.end(), [&](const Course& c) {
+                                return c.getCode() == courseCode;
+                                });
+                            if (it != courses.end()) {
+                                cout << "Course with this code already exists" << endl;
+                                continue;
+                            }
+                            cout << "Enter course name ";
+                            cin >> courseName;
+                            cout << "Enter course credits ";
+                            cin >> courseCredits;
+
+                            Course course(courseCode, courseName, courseCredits);
+                            courses.push_back(course);
+                            cout << "Saving courses to file..." << endl;
+                            saveAllCoursesToFile(courses);
+                            cout << "Course saved" << endl;
+                            logUserAction("Course added" + courseCode);
+                        }
+                        else if (choice == 2) {
+                            viewCourses(courses);
+                        }
+                        else if (choice == 3) {
+                            string courseCode;
+                            cout << "Enter course code to delete ";
+                            cin >> courseCode;
+                            auto it = remove_if(courses.begin(), courses.end(), [&](const Course& c) {
+                                return c.getCode() == courseCode;
+                                });
+                            if (it != courses.end()) {
+                                courses.erase(it, courses.end());
+                                saveAllCoursesToFile(courses);
+                                cout << "Course delete" << endl;
+                                logUserAction("Admin deleted course " + courseCode);
+                            }
+                            else {
+                                cout << "Course not find" << endl;
+                            }
+                        }
+                        else if (choice == 4) {
+                            string name;
+                            int age, id;
+                            cout << "Enter student name: ";
+                            cin >> name;
+                            cout << "Enter student age: ";
+                            cin >> age;
+                            cout << "Enter student ID: ";
+                            cin >> id;
+
+                            students.push_back(Student(name, age, id));
+                            saveAllStudentsToFile(students);
+                            cout << "Student added.\n";
+                            logUserAction("Admin added student " + name);
+                        }
+                        else if (choice == 5) {
+                            cout << "\n--- All Students ---\n";
+                            for (const auto& student : students) {
+                                student.printInfo();
+                                cout << "---------------------\n";
+                            }
+                            logUserAction("Admin viewed all students");
+                        }
+                        else if (choice == 6) {
+                            int id;
+                            cout << "Enter student ID to delete: ";
+                            cin >> id;
+                            auto it = remove_if(students.begin(), students.end(), [&](const Student& s) {
+                                return s.getStudentId() == id;
+                                });
+                            if (it != students.end()) {
+                                students.erase(it, students.end());
+                                saveAllStudentsToFile(students);
+                                cout << "Student deleted.\n";
+                                logUserAction("Admin deleted student ID " + to_string(id));
+                            }
+                            else {
+                                cout << "Student not found.\n";
+                            }
+                        }
+                        else if (choice == 7) {
+                            string name, subject;
+                            int age, experience;
+                            cout << "Enter professor name: ";
+                            cin >> name;
+                            cout << "Enter professor age: ";
+                            cin >> age;
+                            cout << "Enter professor subject: ";
+                            cin >> subject;
+                            cout << "Enter years of experience: ";
+                            cin >> experience;
+
+                            professors.push_back(Professor(name, age, subject, experience));
+                            saveAllProfessorsToFile(professors);
+                            cout << "Professor added.\n";
+                            logUserAction("Admin added professor " + name);
+                        }
+                        else if (choice == 8) {
+                            cout << "\n--- All Professors ---\n";
+                            for (const auto& prof : professors) {
+                                prof.printInfo();
+                                cout << "-----------------------\n";
+                            }
+                            logUserAction("Admin viewed all professors");
+                        }
+
+                        else if (choice == 9) {
+                            string name;
+                            cout << "Enter professor name to delete: ";
+                            cin >> name;
+                            auto it = remove_if(professors.begin(), professors.end(), [&](const Professor& p) {
+                                return p.getName() == name;
+                                });
+                            if (it != professors.end()) {
+                                professors.erase(it, professors.end());
+                                saveAllProfessorsToFile(professors);
+                                cout << "Professor deleted.\n";
+                                logUserAction("Admin deleted professor " + name);
+                            }
+                            else {
+                                cout << "Professor not found.\n";
+                            }
+                        }
+                        else if (choice == 10) {
+                            break;
+                        }
+
+                        else {
+                            cout << "Invalid option Try again\n";
+                        }
+                    }
+                }
+                else {
+                    cout << "wrong password!!!!!!!!!" << endl;
+                }
+            }
+            else if (choice == 2) {
                 while (true) {
-                    cout << "\nAdmin Menu" << endl;
-                    cout << "1 Add new course" << endl;
-                    cout << "2 View all courses" << endl;
-                    cout << "3 Delete course" << endl;
-                    cout << "4 Add new student" << endl;
-                    cout << "5 view all student" << endl;
-                    cout << "6 delet student" << endl;
-                    cout << "7 Add new profesor" << endl;
-                    cout << "8 view all profesor" << endl;
-                    cout << "9 Delet profesor" << endl;
-                    cout << "10 Exit" << endl;
-                    cout << "Choose operation\n";
+                    cout << "\nStudent Menu" << endl;
+                    cout << "1 View available courses" << endl;
+                    cout << "2 view profesor" << endl;
+                    cout << "3 Exit" << endl;
+                    cout << "Choose operation ";
                     cin >> choice;
 
                     if (choice == 1) {
-                        string courseCode, courseName;
-                        int courseCredits;
-                        cout << "Enter course code ";
-                        cin >> courseCode;
-                        auto it = find_if(courses.begin(), courses.end(), [&](const Course& c) {
-                            return c.getCode() == courseCode;
-                            });
-                        if (it != courses.end()) {
-                            cout << "Course with this code already exists" << endl;
-                            continue;
-                        }
-                        cout << "Enter course name ";
-                        cin >> courseName;
-                        cout << "Enter course credits ";
-                        cin >> courseCredits;
-
-                        Course course(courseCode, courseName, courseCredits);
-                        courses.push_back(course);
-                        cout << "Saving courses to file..." << endl;
-                        saveAllCoursesToFile(courses);
-                        cout << "Course saved" << endl;
-                        logUserAction("Course added" + courseCode);
+                        viewCourses(courses);
+                        logUserAction("Student viewed courses");
                     }
                     else if (choice == 2) {
-                        viewCourses(courses);
-                    }
-                    else if (choice == 3) {
-                        string courseCode;
-                        cout << "Enter course code to delete ";
-                        cin >> courseCode;
-                        auto it = remove_if(courses.begin(), courses.end(), [&](const Course& c) {
-                            return c.getCode() == courseCode;
-                            });
-                        if (it != courses.end()) {
-                            courses.erase(it, courses.end());
-                            saveAllCoursesToFile(courses);
-                            cout << "Course delete" << endl;
-                            logUserAction("Admin deleted course " + courseCode);
-                        }
-                        else {
-                            cout << "Course not find" << endl;
-                        }
-                    }
-                    else if (choice == 4) {
-                        string name;
-                        int age, id;
-                        cout << "Enter student name: ";
-                        cin >> name;
-                        cout << "Enter student age: ";
-                        cin >> age;
-                        cout << "Enter student ID: ";
-                        cin >> id;
-
-                        students.push_back(Student(name, age, id));
-                        saveAllStudentsToFile(students);
-                        cout << "Student added.\n";
-                        logUserAction("Admin added student " + name);
-                    }
-                    else if (choice == 5) {
-                        cout << "\n--- All Students ---\n";
-                        for (const auto& student : students) {
-                            student.printInfo();
-                            cout << "---------------------\n";
-                        }
-                        logUserAction("Admin viewed all students");
-                    }
-                    else if (choice == 6) {
-                        int id;
-                        cout << "Enter student ID to delete: ";
-                        cin >> id;
-                        auto it = remove_if(students.begin(), students.end(), [&](const Student& s) {
-                            return s.getStudentId() == id;
-                            });
-                        if (it != students.end()) {
-                            students.erase(it, students.end());
-                            saveAllStudentsToFile(students);
-                            cout << "Student deleted.\n";
-                            logUserAction("Admin deleted student ID " + to_string(id));
-                        }
-                        else {
-                            cout << "Student not found.\n";
-                        }
-                    }
-                    else if (choice == 7) {
-                        string name, subject;
-                        int age, experience;
-                        cout << "Enter professor name: ";
-                        cin >> name;
-                        cout << "Enter professor age: ";
-                        cin >> age;
-                        cout << "Enter professor subject: ";
-                        cin >> subject;
-                        cout << "Enter years of experience: ";
-                        cin >> experience;
-
-                        professors.push_back(Professor(name, age, subject, experience));
-                        saveAllProfessorsToFile(professors);
-                        cout << "Professor added.\n";
-                        logUserAction("Admin added professor " + name);
-                    }
-                    else if (choice == 8) {
                         cout << "\n--- All Professors ---\n";
                         for (const auto& prof : professors) {
                             prof.printInfo();
                             cout << "-----------------------\n";
                         }
-                        logUserAction("Admin viewed all professors");
+                        logUserAction("Student viewed all professors");
                     }
-
-                    else if (choice == 9) {
-                        string name;
-                        cout << "Enter professor name to delete: ";
-                        cin >> name;
-                        auto it = remove_if(professors.begin(), professors.end(), [&](const Professor& p) {
-                            return p.getName() == name;
-                            });
-                        if (it != professors.end()) {
-                            professors.erase(it, professors.end());
-                            saveAllProfessorsToFile(professors);
-                            cout << "Professor deleted.\n";
-                            logUserAction("Admin deleted professor " + name);
-                        }
-                        else {
-                            cout << "Professor not found.\n";
-                        }
+                    else if (choice == 3) {
+                        break;
                     }
-
                     else {
-                        cout << "Invalid option Try again\n";
+                        cout << "Invalid option Try agai\n";
                     }
                 }
             }
-            else {
-                cout << "wrong password!!!!!!!!!" << endl;
+            else if (choice == 0)
+            {
+                break;
+                cout << "Exiting program" << endl;
             }
         }
-        else if (choice == 2) {
-            while (true) {
-                cout << "\nStudent Menu" << endl;
-                cout << "1 View available courses" << endl;
-                cout << "2 view profesor" << endl;
-                cout << "3 Exit" << endl;
-                cout << "Choose operation ";
-                cin >> choice;
 
-                if (choice == 1) {
-                    viewCourses(courses);
-                    logUserAction("Student viewed courses");
-                }
-                else if (choice == 2) {
-                    cout << "\n--- All Professors ---\n";
-                    for (const auto& prof : professors) {
-                        prof.printInfo();
-                        cout << "-----------------------\n";
-                    }
-                    logUserAction("Student viewed all professors");
-                }
-                else if (choice == 3) {
-                    break;
-                }
-                else {
-                    cout << "Invalid option Try agai\n";
-                }
-            }
-        }
-        else {
-            cout << "Exiting program" << endl;
+        catch (exception& e) {
+            cerr << "Error " << e.what() << endl;
         }
     }
-    catch (exception& e) {
-        cerr << "Error " << e.what() << endl;
-    }
-
     return 0;
 }
